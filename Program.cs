@@ -10,6 +10,10 @@ namespace dxf_creating_description_for_nesting
     {
         static void Main(string[] args)
         {
+            Console.WriteLine("Hello!");
+            Entity.DxfReader reader = new Entity.DxfReader();
+            reader.loadDxfFile();
+            Console.ReadKey();
         }
     }
 }

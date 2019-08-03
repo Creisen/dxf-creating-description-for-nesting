@@ -1,0 +1,10 @@
+C:\Users\jkola\Desktop\Programowanie\C#\dxf-creating-description-for-nesting\bin\Debug\dxf-creating-description-for-nesting.exe.config
+C:\Users\jkola\Desktop\Programowanie\C#\dxf-creating-description-for-nesting\bin\Debug\dxf-creating-description-for-nesting.exe
+C:\Users\jkola\Desktop\Programowanie\C#\dxf-creating-description-for-nesting\bin\Debug\dxf-creating-description-for-nesting.pdb
+C:\Users\jkola\Desktop\Programowanie\C#\dxf-creating-description-for-nesting\obj\Debug\dxf-creating-description-for-nesting.csprojAssemblyReference.cache
+C:\Users\jkola\Desktop\Programowanie\C#\dxf-creating-description-for-nesting\obj\Debug\dxf-creating-description-for-nesting.csproj.CoreCompileInputs.cache
+C:\Users\jkola\Desktop\Programowanie\C#\dxf-creating-description-for-nesting\obj\Debug\dxf-creating-description-for-nesting.exe
+C:\Users\jkola\Desktop\Programowanie\C#\dxf-creating-description-for-nesting\obj\Debug\dxf-creating-description-for-nesting.pdb
+C:\Users\jkola\Desktop\Programowanie\C#\dxf-creating-description-for-nesting\bin\Debug\netDxf.dll
+C:\Users\jkola\Desktop\Programowanie\C#\dxf-creating-description-for-nesting\bin\Debug\netDxf.xml
+C:\Users\jkola\Desktop\Programowanie\C#\dxf-creating-description-for-nesting\obj\Debug\dxf-creating-description-for-nesting.csproj.CopyComplete
