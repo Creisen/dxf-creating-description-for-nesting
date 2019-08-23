@@ -22,37 +22,91 @@ namespace dxf_creating_description_for_nesting.Entity
         // array of components
         ArrayList componentsList = new ArrayList();
 
-        // stringbuilder for each plate
-        StringBuilder stringBuilder = new StringBuilder();
+       
 
         public void loadDxfFile()
         {
             // path of dxf file
             Console.Write("Podaj sciezke do plikow *.dxf (np. C:\\Users\\user\\Desktop\\): ");
-            filesPath = Directory.GetFiles(Console.ReadLine(), "*.dxf");
+            filesPath = Directory.GetFiles(Console.ReadLine(), "*.dxf");      
 
-           
 
-            
-            bool isBinary;
             foreach (string file in filesPath)
             {
+                // stringbuilder for each plate
+                StringBuilder stringBuilder = new StringBuilder();
 
-                string line;
+                string lnB, lnP, lnQ, lnM, lnT;
 
-
-
-                while (line = file.ReadLine()) != null
+                // Read file using StreamReader. Reads file line by line
+                using (StreamReader fileText = new StreamReader(file))
                 {
-                    if (file)
+                    while ((lnB = fileText.ReadLine()) != null)
                     {
+                        if (lnB.StartsWith("{[B]"))
+                        {
+                            stringBuilder.Append("POZ=18802-").Append(lnB.Substring(4).Trim('}')).Append("-");
+                        }
+                    }
+                }
 
+                using (StreamReader fileText = new StreamReader(file))
+                {
+                    while ((lnP = fileText.ReadLine()) != null)
+                        {
+                            if (lnP.StartsWith("{[P]"))
+                            {
+                                stringBuilder.Append(lnP.Substring(4).Trim('}')).Append(" ");
+                            }
+                        }
+                    }
+
+
+                using (StreamReader fileText = new StreamReader(file))
+                {
+                    while ((lnQ = fileText.ReadLine()) != null)
+                    {
+                        if (lnQ.StartsWith("{[Q]"))
+                        {
+                            stringBuilder.Append("SZT=").Append(lnQ.Substring(4).Trim('}')).Append(" ");
+                        }
+                    }
+                }
+
+
+                using (StreamReader fileText = new StreamReader(file))
+                {
+                    while ((lnM = fileText.ReadLine()) != null)
+                    {
+                        if (lnM.StartsWith("{[M]"))
+                        {
+                            stringBuilder.Append("MAT=").Append(lnM.Substring(4).Trim('}')).Append(" ");
+                        }
+                    }
+                }
+
+
+                using (StreamReader fileText = new StreamReader(file))
+                {
+                    while ((lnT = fileText.ReadLine()) != null)
+                    {
+                        if (lnT.StartsWith("{[T]"))
+                        {
+                            stringBuilder.Append("GR=").Append(lnT.Substring(4).Trim('}'));
+                        }
                     }
                 }
                 
-                
+                    componentsList.Add(stringBuilder.ToString());
             }
-            
+
+            foreach (string item in componentsList)
+            {
+                Console.WriteLine(item);
+                Console.WriteLine();
+                Console.ReadKey();
+            }
+           
         }
     }
 }
