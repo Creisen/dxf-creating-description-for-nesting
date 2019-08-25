@@ -1,15 +1,7 @@
-﻿using netDxf;
-using netDxf.Entities;
-using netDxf.Header;
-using netDxf.Tables;
-using System;
+﻿using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-
 
 namespace dxf_creating_description_for_nesting.Entity
 {
@@ -22,21 +14,30 @@ namespace dxf_creating_description_for_nesting.Entity
         // array of components
         ArrayList componentsList = new ArrayList();
 
+        // DxfWriter object
+        DxfWriter dxfWriter = new DxfWriter();
+
+        // counter
+        int counter = 0;
        
 
         public void loadDxfFile()
         {
             // path of dxf file
             Console.Write("Podaj sciezke do plikow *.dxf (np. C:\\Users\\user\\Desktop\\): ");
-            filesPath = Directory.GetFiles(Console.ReadLine(), "*.dxf");      
+            filesPath = Directory.GetFiles(Console.ReadLine(), "*.dxf");
 
+            int buildNo = 18802;
 
             foreach (string file in filesPath)
             {
                 // stringbuilder for each plate
                 StringBuilder stringBuilder = new StringBuilder();
 
-                string lnB, lnP, lnQ, lnM, lnT;
+                string lnB, lnP, lnQ, lnM, lnT, lnDesc;
+                string lnPTmp = "";
+                int blockNo = -100;
+                string plateDescrtiption = "";
 
                 // Read file using StreamReader. Reads file line by line
                 using (StreamReader fileText = new StreamReader(file))
@@ -45,7 +46,8 @@ namespace dxf_creating_description_for_nesting.Entity
                     {
                         if (lnB.StartsWith("{[B]"))
                         {
-                            stringBuilder.Append("POZ=18802-").Append(lnB.Substring(4).Trim('}')).Append("-");
+                            stringBuilder.Append("POZ=").Append(buildNo).Append("-").Append(lnB.Substring(4).Trim('}')).Append("-");
+                            blockNo = Int32.Parse(lnB.Substring(4).Trim('}'));
                         }
                     }
                 }
@@ -56,7 +58,13 @@ namespace dxf_creating_description_for_nesting.Entity
                         {
                             if (lnP.StartsWith("{[P]"))
                             {
+                            string tmp = lnP.Substring(4).Trim('}');
                                 stringBuilder.Append(lnP.Substring(4).Trim('}')).Append(" ");
+                                lnPTmp = lnP.Trim('{').Substring(0,3)+stringBuilder.ToString().Substring(4);
+                                plateDescrtiption = stringBuilder.ToString().Substring(4);
+                                Console.WriteLine("[P]: " + lnPTmp);
+                                Console.WriteLine("plate desc: " + plateDescrtiption);
+                                
                             }
                         }
                     }
@@ -96,16 +104,39 @@ namespace dxf_creating_description_for_nesting.Entity
                         }
                     }
                 }
-                
-                    componentsList.Add(stringBuilder.ToString());
+
+                using (StreamReader fileText = new StreamReader(file))
+                {
+                    while ((lnDesc = fileText.ReadLine()) != null)
+                    {
+                        if (lnDesc.StartsWith(blockNo.ToString()))
+                        {
+                            
+                        }
+                    }
+                }
+
+                componentsList.Add(stringBuilder.ToString());
+
+                    dxfWriter.writeDxf(file, stringBuilder.ToString(), 5.0);
+                    dxfWriter.writeDxf(file, lnPTmp, 5.0);
+                    dxfWriter.writeDxf(file, plateDescrtiption, 10.0);
+
+                counter++;
+
             }
+
+            Console.WriteLine();
+
+            int dxfCounter = 1;
 
             foreach (string item in componentsList)
             {
-                Console.WriteLine(item);
+                Console.WriteLine(dxfCounter + ": " + item);
                 Console.WriteLine();
-                Console.ReadKey();
+                dxfCounter++;
             }
+                Console.WriteLine("Łącznie plików: " + counter);
            
         }
     }
