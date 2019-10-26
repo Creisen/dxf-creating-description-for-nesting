@@ -14,7 +14,7 @@ namespace dxf_creating_description_for_nesting.Entity
         // by default it will create an AutoCad2000 DXF version
         private DxfDocument dxfDocument;
 
-        public void writeDxf(string file, string inputText, double textHeight)
+        public void writeDxf(string file, string inputText, double textHeight, Layer layer)
         {
             bool isBinary;
             
@@ -25,9 +25,9 @@ namespace dxf_creating_description_for_nesting.Entity
                 // load file
                 dxfDocument = DxfDocument.Load(file);
 
-                // text
+            // text
+               
                 text = new Text(inputText, textLocation, textHeight);
-                Layer layer = new Layer("8");
                 text.Layer = layer;
                 text.Alignment = TextAlignment.BottomLeft;
                 dxfDocument.AddEntity(text);

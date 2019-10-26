@@ -1,4 +1,5 @@
-﻿using System;
+﻿using netDxf.Tables;
+using System;
 using System.Collections;
 using System.IO;
 using System.Text;
@@ -17,9 +18,21 @@ namespace dxf_creating_description_for_nesting.Entity
         // DxfWriter object
         DxfWriter dxfWriter = new DxfWriter();
 
+        //Layers
+        Layer layer5 = new Layer("5");
+        Layer layer8 = new Layer("8");
+
         // counter
-        int counter = 0;
-       
+        int counter = 1;
+
+        // stringbuilder for each plate
+        StringBuilder stringBuilder = new StringBuilder();
+
+        string lnB = "", lnP = "", lnQ = "", lnM = "", lnT = "";
+
+        string lnPTmp = "";
+        string plateDescrtiption = "";
+
 
         public void loadDxfFile()
         {
@@ -27,117 +40,81 @@ namespace dxf_creating_description_for_nesting.Entity
             Console.Write("Podaj sciezke do plikow *.dxf (np. C:\\Users\\user\\Desktop\\): ");
             filesPath = Directory.GetFiles(Console.ReadLine(), "*.dxf");
 
-            int buildNo = 18802;
+            Console.Write("Wpisz numer budowy (np. 18802): ");
+            int buildNo = Int32.Parse(Console.ReadLine());
+
+            Console.WriteLine();
 
             foreach (string file in filesPath)
             {
-                // stringbuilder for each plate
-                StringBuilder stringBuilder = new StringBuilder();
 
-                string lnB, lnP, lnQ, lnM, lnT, lnDesc;
-                string lnPTmp = "";
-                int blockNo = -100;
-                string plateDescrtiption = "";
+                Console.WriteLine(counter + ": Plik: " + file);
+
+                // block number writer
+                text_changer.BlockNameReader block = new text_changer.BlockNameReader();
+                string newBlockNo = block.readBlockNumber(file, lnB, stringBuilder, buildNo);
+
+                // position code changer
+                text_changer.PositionNameReader positionReader = new text_changer.PositionNameReader();
+                positionReader.positionText(file, lnP, stringBuilder, lnPTmp, plateDescrtiption);
+
+                
 
                 // Read file using StreamReader. Reads file line by line
                 using (StreamReader fileText = new StreamReader(file))
                 {
-                    while ((lnB = fileText.ReadLine()) != null)
-                    {
-                        if (lnB.StartsWith("{[B]"))
-                        {
-                            stringBuilder.Append("POZ=").Append(buildNo).Append("-").Append(lnB.Substring(4).Trim('}')).Append("-");
-                            blockNo = Int32.Parse(lnB.Substring(4).Trim('}'));
-                        }
-                    }
-                }
-
-                using (StreamReader fileText = new StreamReader(file))
-                {
-                    while ((lnP = fileText.ReadLine()) != null)
-                        {
-                            if (lnP.StartsWith("{[P]"))
-                            {
-                            string tmp = lnP.Substring(4).Trim('}');
-                                stringBuilder.Append(lnP.Substring(4).Trim('}')).Append(" ");
-                                lnPTmp = lnP.Trim('{').Substring(0,3)+stringBuilder.ToString().Substring(4);
-                                plateDescrtiption = stringBuilder.ToString().Substring(4);
-                                Console.WriteLine("[P]: " + lnPTmp);
-                                Console.WriteLine("plate desc: " + plateDescrtiption);
-                                
-                            }
-                        }
-                    }
-
-
-                using (StreamReader fileText = new StreamReader(file))
-                {
                     while ((lnQ = fileText.ReadLine()) != null)
                     {
-                        if (lnQ.StartsWith("{[Q]"))
+                        if (lnQ.StartsWith("[Q]"))
                         {
-                            stringBuilder.Append("SZT=").Append(lnQ.Substring(4).Trim('}')).Append(" ");
+                            stringBuilder.Append("SZT=").Append(lnQ.Substring(3).Trim('}')).Append(" ");
                         }
                     }
                 }
 
-
+                // Read file using StreamReader. Reads file line by line
                 using (StreamReader fileText = new StreamReader(file))
                 {
                     while ((lnM = fileText.ReadLine()) != null)
                     {
-                        if (lnM.StartsWith("{[M]"))
+                        if (lnM.StartsWith("[M]"))
                         {
-                            stringBuilder.Append("MAT=").Append(lnM.Substring(4).Trim('}')).Append(" ");
+                            stringBuilder.Append("MAT=").Append(lnM.Substring(3).Trim('}')).Append(" ");
                         }
                     }
                 }
 
-
+                // Read file using StreamReader. Reads file line by line
                 using (StreamReader fileText = new StreamReader(file))
                 {
                     while ((lnT = fileText.ReadLine()) != null)
                     {
-                        if (lnT.StartsWith("{[T]"))
+                        if (lnT.StartsWith("[T]"))
                         {
-                            stringBuilder.Append("GR=").Append(lnT.Substring(4).Trim('}'));
+                            stringBuilder.Append("GR=").Append(lnT.Substring(3).Trim('}'));
                         }
                     }
                 }
+    
 
-                using (StreamReader fileText = new StreamReader(file))
-                {
-                    while ((lnDesc = fileText.ReadLine()) != null)
-                    {
-                        if (lnDesc.StartsWith(blockNo.ToString()))
-                        {
-                            
-                        }
-                    }
-                }
+                    componentsList.Add(stringBuilder.ToString());
+                    Console.WriteLine("pozycja: " + stringBuilder.ToString());
+                    Console.WriteLine();
 
-                componentsList.Add(stringBuilder.ToString());
-
-                    dxfWriter.writeDxf(file, stringBuilder.ToString(), 5.0);
-                    dxfWriter.writeDxf(file, lnPTmp, 5.0);
-                    dxfWriter.writeDxf(file, plateDescrtiption, 10.0);
+                    dxfWriter.writeDxf(file, stringBuilder.ToString(), 5.0, layer8);
+                    dxfWriter.writeDxf(file, lnPTmp, 5.0, layer8);
+                    dxfWriter.writeDxf(file, plateDescrtiption, 10.0, layer5);
 
                 counter++;
-
             }
 
             Console.WriteLine();
-
-            int dxfCounter = 1;
-
-            foreach (string item in componentsList)
-            {
-                Console.WriteLine(dxfCounter + ": " + item);
-                Console.WriteLine();
-                dxfCounter++;
-            }
-                Console.WriteLine("Łącznie plików: " + counter);
+            Console.WriteLine("Łącznie plików: " + (counter-1));
+            Console.WriteLine("Wciśnij dowolny klawisz, aby zakończyć działanie programu");
            
         }
+
+
+        
     }
 }
