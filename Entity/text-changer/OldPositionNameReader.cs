@@ -4,15 +4,13 @@ using System.Text;
 
 namespace dxf_creating_description_for_nesting.Entity.text_changer
 {
-    class PositionNameReader
+    class OldPositionNameReader
     {
-        public string positionText(string fileName, string lnP, StringBuilder stringBuilder
-                                 , string lnPTmp, string plateDescrtiption)
+        public string positionText(string fileName, string lnP)
         {
             int posCounter = 0;
             int stoppedPosCounter = 0;
             string oldPositionText = "oldPosition";
-            string newPositionText = "newPosition";
 
             // Read file using StreamReader. Reads file line by line
             using (StreamReader fileText = new StreamReader(fileName))
@@ -22,12 +20,7 @@ namespace dxf_creating_description_for_nesting.Entity.text_changer
                     if (lnP.StartsWith("[P]"))
                     {
                         stoppedPosCounter = posCounter;
-
-                        stringBuilder.Append(lnP.Substring(3).Trim('}')).Append(" ");
-                        lnPTmp = lnP.Trim('{').Substring(0, 3) + stringBuilder.ToString().Substring(4);
-                        plateDescrtiption = stringBuilder.ToString().Substring(4).Trim();
-                        Console.WriteLine("[P]: " + lnPTmp);
-                        Console.WriteLine("plate desc: " + plateDescrtiption);
+                        break;
                     }
                     posCounter++;
                 }
@@ -43,16 +36,11 @@ namespace dxf_creating_description_for_nesting.Entity.text_changer
                     if (posCounter == stoppedPosCounter)
                     {
                         oldPositionText = fileText.ReadLine();
-                        newPositionText = lnPTmp.Trim();
                     }
                 }
             }
 
-            string text = File.ReadAllText(fileName);
-            text = text.Replace(oldPositionText, newPositionText);
-            File.WriteAllText(fileName, text);
-
-            return plateDescrtiption;
+            return oldPositionText.Substring(9);
         }
     }
 }

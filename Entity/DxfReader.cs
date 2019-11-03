@@ -26,16 +26,14 @@ namespace dxf_creating_description_for_nesting.Entity
         int counter = 1;
 
         // stringbuilder for each plate
-        StringBuilder stringBuilder = new StringBuilder();
-
-        string lnB = "", lnP = "", lnQ = "", lnM = "", lnT = "";
-
-        string lnPTmp = "";
-        string plateDescrtiption = "";
+        StringBuilder stringBuilder;
+        StringBuilder oldPlateStringBuilder;
 
 
         public void loadDxfFile()
         {
+            
+
             // path of dxf file
             Console.Write("Podaj sciezke do plikow *.dxf (np. C:\\Users\\user\\Desktop\\): ");
             filesPath = Directory.GetFiles(Console.ReadLine(), "*.dxf");
@@ -48,6 +46,14 @@ namespace dxf_creating_description_for_nesting.Entity
             foreach (string file in filesPath)
             {
 
+                stringBuilder = new StringBuilder();
+
+                string lnB = "", lnP = "", lnQ = "", lnM = "", lnT = "";
+
+                string lnPTmp = "";
+                string plateDescrtiption = "";
+                string oldPlateDescription = "";
+
                 Console.WriteLine(counter + ": Plik: " + file);
 
                 // block number writer
@@ -56,9 +62,7 @@ namespace dxf_creating_description_for_nesting.Entity
 
                 // position code changer
                 text_changer.PositionNameReader positionReader = new text_changer.PositionNameReader();
-                positionReader.positionText(file, lnP, stringBuilder, lnPTmp, plateDescrtiption);
-
-                
+                plateDescrtiption = positionReader.positionText(file, lnP, stringBuilder, lnPTmp, plateDescrtiption).Trim();               
 
                 // Read file using StreamReader. Reads file line by line
                 using (StreamReader fileText = new StreamReader(file))
@@ -95,23 +99,42 @@ namespace dxf_creating_description_for_nesting.Entity
                         }
                     }
                 }
-    
+
+                // old plate description
+                oldPlateStringBuilder = new StringBuilder();
+
+                //text_changer.OldBlockNameReader oldBlockNameReader = new text_changer.OldBlockNameReader();
+                //oldPlateStringBuilder.Append(oldBlockNameReader.readBlockNumber(file, lnB)).Append("-");
+
+                text_changer.OldPositionNameReader oldPositionNameReader = new text_changer.OldPositionNameReader();
+                oldPlateStringBuilder.Append(oldPositionNameReader.positionText(file, lnP));
+
+                // Console.WriteLine("oldPlateDesc: " + oldPlateStringBuilder.ToString());
+
+                oldPlateDescription = oldPlateStringBuilder.ToString().Trim();
+
+                text_changer.PlateShortDescription plateShortDescription = new text_changer.PlateShortDescription();
+                plateShortDescription.changeText(file, lnP, oldPlateDescription, plateDescrtiption);
+
 
                     componentsList.Add(stringBuilder.ToString());
                     Console.WriteLine("pozycja: " + stringBuilder.ToString());
                     Console.WriteLine();
 
                     dxfWriter.writeDxf(file, stringBuilder.ToString(), 5.0, layer8);
-                    dxfWriter.writeDxf(file, lnPTmp, 5.0, layer8);
-                    dxfWriter.writeDxf(file, plateDescrtiption, 10.0, layer5);
+                    // dxfWriter.writeDxf(file, lnPTmp, 5.0, layer8);
+                    // dxfWriter.writeDxf(file, plateDescrtiption, 10.0, layer5);
 
                 counter++;
+
             }
 
             Console.WriteLine();
             Console.WriteLine("Łącznie plików: " + (counter-1));
             Console.WriteLine("Wciśnij dowolny klawisz, aby zakończyć działanie programu");
+
            
+
         }
 
 

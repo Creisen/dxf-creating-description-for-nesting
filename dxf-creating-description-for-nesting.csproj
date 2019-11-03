@@ -50,6 +50,9 @@
     <Compile Include="Entity\DxfWriter.cs" />
     <Compile Include="Entity\text-changer\BlockNameReader.cs" />
     <Compile Include="Entity\text-changer\MaterialReader.cs" />
+    <Compile Include="Entity\text-changer\OldBlockNameReader.cs" />
+    <Compile Include="Entity\text-changer\OldPositionNameReader.cs" />
+    <Compile Include="Entity\text-changer\PlateShortDescription.cs" />
     <Compile Include="Entity\text-changer\PositionNameReader.cs" />
     <Compile Include="Entity\text-changer\QuantityReader.cs" />
     <Compile Include="Entity\text-changer\ThicknessReader.cs" />
